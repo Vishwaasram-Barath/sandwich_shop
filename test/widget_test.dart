@@ -33,4 +33,42 @@ void main() {
       expect(find.text('3 Footlong Sub sandwich(es): 🥪🥪🥪'), findsOneWidget);
     });
   });
+
+  group('App smoke tests', () {
+    testWidgets('App displays MenuScreen as home', (WidgetTester tester) async {
+      await tester.pumpWidget(const App());
+      expect(find.byType(MenuScreen), findsOneWidget);
+      expect(find.text('Sandwich Menu'), findsOneWidget);
+    });
+
+    testWidgets('Displays sandwich cards with names and prices',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const App());
+      expect(find.text('Footlong Sub'), findsOneWidget);
+      expect(find.text('£7.50'), findsOneWidget);
+      expect(find.text('Six-Inch Sub'), findsOneWidget);
+      expect(find.text('£4.50'), findsOneWidget);
+      expect(find.text('Order'), findsNWidgets(2));
+    });
+
+    testWidgets('Tapping Order navigates to OrderScreen with selected sandwich',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const App());
+
+      await tester.tap(find.text('Order').first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OrderScreen), findsOneWidget);
+      expect(find.text('Order Footlong Sub'), findsOneWidget);
+      expect(find.text('0 Footlong Sub sandwich(es): '), findsOneWidget);
+
+      await tester.tap(find.text('Add'));
+      await tester.pump();
+      expect(find.text('1 Footlong Sub sandwich(es): 🥪'), findsOneWidget);
+
+      await tester.tap(find.text('Remove'));
+      await tester.pump();
+      expect(find.text('0 Footlong Sub sandwich(es): '), findsOneWidget);
+    });
+  });
 }
